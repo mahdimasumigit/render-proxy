@@ -79,13 +79,20 @@ fi
 echo "=== [3/5] Starting Local Tailscale Daemon (Userspace) ==="
 mkdir -p /tmp/local_ts
 TS_SOCK="/tmp/local_ts/tailscaled.sock"
-if ! pgrep -f "$TS_SOCK" >/dev/null; then
+ts_healthy=false
+if [ -S "$TS_SOCK" ] && pgrep -f "$TS_SOCK" >/dev/null 2>&1; then
+    if tailscale --socket="$TS_SOCK" status --json 2>/dev/null | grep -q '"BackendState": "Running"'; then
+        ts_healthy=true
+    fi
+fi
+
+if [ "$ts_healthy" = false ]; then
     /usr/sbin/tailscaled --tun=userspace-networking --socks5-server=127.0.0.1:1080 --outbound-http-proxy-listen=127.0.0.1:8080 --state=/tmp/local_ts/tailscaled.state --socket="$TS_SOCK" >/tmp/local_ts/daemon.log 2>&1 &
     sleep 2
     tailscale --socket="$TS_SOCK" up --authkey="$TS_KEY" --hostname="gut-client" --reset >/dev/null 2>&1
     echo "Local Tailscale client connected."
 else
-    echo "Local Tailscale client already running."
+    echo "Local Tailscale client already running and healthy."
 fi
 
 echo "=== [4/5] Checking / Deploying Render Cloud Web Service ==="
