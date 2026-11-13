@@ -14,24 +14,26 @@ A self-contained, linear guide to deploy, monitor, start, and stop a 24/7 cloud 
 ---
 
 ## 2. Requirements & Setup
-1. **Render Account & API Key**:
+1. **GitHub CLI Token (`GH_TOKEN`)**:
+   * Generate a Personal Access Token on GitHub with `repo` scope:
+     `https://github.com/settings/tokens/new` (Logged in as `mahdimasumigit`).
+   * Add to `.env`:
+     ```bash
+     GH_TOKEN="ghp_..."
+     ```
+2. **Render Account & API Key**:
    * Generate an API key from `https://dashboard.render.com/u/settings` > *API Keys*.
    * Add to `.env`:
      ```bash
      RENDER_API_KEY="rnd_..."
      ```
-2. **Tailscale Auth Key**:
+3. **Tailscale Auth Key**:
    * Add to `.env`:
      ```bash
      TAILSCALE_AUTH_KEY="tskey-auth-..."
      ```
-3. **GitHub Repository**:
-   * Create and push this directory to a public repository (e.g. `https://github.com/hosseinalipour/render-proxy`) using `gh`:
-     ```bash
-     cd render-blueprint
-     git init
-     gh repo create render-proxy --public --source=. --remote=origin --push
-     ```
+4. **Automated Deployment**:
+   * `start.sh` automatically creates the repository `mahdimasumigit/render-proxy` on GitHub using `gh`, sets up the Web Service on Render, and verifies end-to-end connectivity before reporting success.
 
 ---
 
